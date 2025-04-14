@@ -35,7 +35,10 @@ await connectDB();
 await connectCloudinary();
 
 // Ортақ middleware-тер
-app.use(cors());
+app.use(cors({
+    origin: ["https://mern-hh.vercel.app"],
+    credentials: true
+  }));
 app.use(express.json());
 
 // 👉 Clerk Webhooks — БҰЛ middleware-ден БҰРЫН!
