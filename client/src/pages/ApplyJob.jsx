@@ -49,35 +49,37 @@ const ApplyJob = () => {
     }
   };
 
-const applyHandler = async () => {
-  try {
-    console.log("🔍 userData before applying:", userData);
-
-    if (!userData) {
-      return toast.error("Өтініш беру үшін жүйеге кіріңіз");
+  const applyHandler = async () => {
+    try {
+      console.log("🔍 userData before applying:", userData);
+      console.log("🧠 full dump:", JSON.stringify(userData, null, 2));      
+  
+      if (!userData) {
+        return toast.error("Өтініш беру үшін жүйеге кіріңіз");
+      }
+  
+      if (!userData.resume) {
+        return toast.error("Өтініш беру үшін түйіндемені жүктеп салыңыз.");
+      }
+  
+      const token = await getToken();
+      const { data } = await axios.post(
+        `${backendUrl}/api/users/apply`,
+        { jobId: JobsData?._id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
+      if (data.success) {
+        toast.success(data.message);
+        fetchUserApplications();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error("Жұмысқа өтініш беру қатесі. Қайталап көріңіз.");
     }
-
-    if (!userData.resume) {
-      return toast.error("Өтініш беру үшін түйіндемені жүктеп салыңыз.");
-    }
-
-    const token = await getToken();
-    const { data } = await axios.post(
-      `${backendUrl}/api/users/apply`,
-      { jobId: JobsData?._id },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    if (data.success) {
-      toast.success(data.message);
-      fetchUserApplications();
-    } else {
-      toast.error(data.message);
-    }
-  } catch (error) {
-    toast.error("Жұмысқа өтініш беру қатесі. Қайталап көріңіз.");
-  }
-};
+  };
+  
 
   const checkAlreadyApplied = () => {
     if (JobsData && userApplications && userApplications.length > 0) {

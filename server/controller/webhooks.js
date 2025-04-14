@@ -1,47 +1,54 @@
 import { Webhook } from "svix";
 import User from "../models/User.js";
 
+// Clerk жүйесінен келетін webhook сұраныстарын өңдеу
 export const clerkWebhooks = async (req, res) => {
   try {
+    // Clerk вебхугының құпия кілтімен тексеру
     const webhook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
     const reqBody = req.body;
 
     if (!reqBody) {
-      return res.status(400).json({ error: "Missing request body" });
+      return res.status(400).json({ error: "Сұраныс денесі бос" });
     }
 
     const { data, type } = reqBody;
-    console.log("📦 Webhook event:", type);
-    console.log("📄 Data:", JSON.stringify(data, null, 2));
+    console.log("📦 Webhook оқиғасы:", type);
+
+    console.log("📦 RAW DATA:", JSON.stringify(data, null, 2));
 
     if (!data || !type) {
-      return res.status(400).json({ error: "Invalid request body" });
+      return res.status(400).json({ error: "Сұраныс дұрыс емес" });
     }
 
+    // Сұранысты тексеру — қолтаңба арқылы
     await webhook.verify(JSON.stringify(reqBody), {
       "svix-id": req.headers["svix-id"],
       "svix-timestamp": req.headers["svix-timestamp"],
       "svix-signature": req.headers["svix-signature"],
     });
 
+    // Webhook оқиғасын өңдеу
     switch (type) {
       case "user.created": {
         const email = data.email_addresses?.[0]?.email_address;
         const image = data.image_url || data.profile_image_url;
         const id = data.id;
-      
+
+        // Міндетті өрістерді тексеру
         if (!id || !email || !image) {
-          console.log("❌ Не хватает данных для создания пользователя");
-          return res.status(400).json({ error: "Missing required fields" });
+          console.log("❌ Қолданушыны құру үшін деректер жеткіліксіз");
+          return res.status(400).json({ error: "Міндетті деректер жоқ" });
         }
-      
-        // ✅ Проверка — если уже есть, не создаём
-        const existingUser = await User.findById(id);
+
+        // Қолданушы бұрыннан бар болса, қайта құрмау
+        const existingUser = await User.findOne({ email });
         if (existingUser) {
-          console.log("ℹ️ Пользователь уже существует:", id);
+          console.log("⚠️ Бұл электрондық поштасы бар пайдаланушы бұрыннан бар");
           return res.status(200).json({ message: "User already exists" });
         }
-      
+
+        // Қолданушыны құру
         const userData = {
           _id: id,
           clerkId: id,
@@ -50,9 +57,9 @@ export const clerkWebhooks = async (req, res) => {
           image,
           resume: "",
         };
-      
+
         await User.create(userData);
-        console.log("✅ Пользователь успешно создан:", userData);
+        console.log("✅ Қолданушы сәтті құрылды:", userData);
         return res.json({});
       }
 
@@ -62,22 +69,23 @@ export const clerkWebhooks = async (req, res) => {
           name: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
           image: data.image_url || data.profile_image_url,
         };
+
         await User.findOneAndUpdate({ clerkId: data.id }, updateData);
-        console.log("🔄 Пользователь обновлён:", data.id);
+        console.log("🔄 Қолданушы жаңартылды:", data.id);
         return res.json({});
       }
 
       case "user.deleted": {
         await User.findOneAndDelete({ clerkId: data.id });
-        console.log("🗑️ Пользователь удалён:", data.id);
+        console.log("🗑️ Қолданушы жойылды:", data.id);
         return res.json({});
       }
 
       default:
-        return res.status(400).json({ error: "Unhandled event type" });
+        return res.status(400).json({ error: "Белгісіз оқиға түрі" });
     }
   } catch (error) {
-    console.error("❌ Webhook error:", error.message);
-    return res.status(500).json({ success: false, message: "Webhooks Error" });
+    console.error("❌ Webhook қатесі:", error.message);
+    return res.status(500).json({ success: false, message: "Webhook өңдеу қатесі" });
   }
 };

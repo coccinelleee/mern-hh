@@ -58,6 +58,7 @@ export const AppContextProvider = (props) => {
   const fetchUserData = async () => {
     try {
       const token = await getToken();
+      console.log("📦 token before user fetch:", token); // 👀
       const { data } = await axios.get(`${backendUrl}/api/users/user`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -125,6 +126,7 @@ export const AppContextProvider = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       const token = await getToken();
+      console.log("🪪 Clerk token:", token); 
       if (user && token) {
         await fetchUserData();
         await fetchUserApplications();
@@ -132,7 +134,7 @@ export const AppContextProvider = (props) => {
     };
     fetchData();
   }, [user]);
-  
+
 
   const value = {
     searchFilter,
