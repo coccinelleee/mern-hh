@@ -1,19 +1,15 @@
-import jwt from "jsonwebtoken";
+import { getAuth } from "@clerk/express";
 import User from "../models/User.js";
 
 const requireUser = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
+    const { userId } = getAuth(req); // Clerk аутентификация
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ success: false, message: "Токен жоқ, жүйеге кіріңіз" });
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Токен жарамсыз немесе қолданушы табылмады" });
     }
 
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Clerk ID → sub
-    const user = await User.findOne({ clerkId: decoded.sub });
+    const user = await User.findById(userId); // user._id == clerkId
 
     if (!user) {
       return res.status(404).json({ success: false, message: "Қолданушы табылмады" });
@@ -22,8 +18,8 @@ const requireUser = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.error("🔒 requireUser error:", error.message);
-    return res.status(401).json({ success: false, message: "Қолданушы тексеруі сәтсіз аяқталды" });
+    console.error("❌ requireUser қатесі:", error.message);
+    return res.status(401).json({ success: false, message: "Қолданушыны тексеру қатесі" });
   }
 };
 
