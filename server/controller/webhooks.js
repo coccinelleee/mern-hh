@@ -32,23 +32,28 @@ export const clerkWebhooks = async (req, res) => {
     switch (type) {
       case "user.created": {
         const email = data.email_addresses?.[0]?.email_address;
-        const image = data.image_url || data.profile_image_url;
         const id = data.id;
-
-        // Міндетті өрістерді тексеру
+        const image =
+          data.image_url ||
+          data.profile_image_url ||
+          data.external_accounts?.[0]?.avatar_url ||
+          "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      
+        console.log("📧 Email:", email);
+        console.log("🧠 ID:", id);
+        console.log("🖼 Image:", image);
+      
         if (!id || !email || !image) {
           console.log("❌ Қолданушыны құру үшін деректер жеткіліксіз");
           return res.status(400).json({ error: "Міндетті деректер жоқ" });
         }
-
-        // Қолданушы бұрыннан бар болса, қайта құрмау
+      
         const existingUser = await User.findOne({ email });
         if (existingUser) {
           console.log("⚠️ Бұл электрондық поштасы бар пайдаланушы бұрыннан бар");
           return res.status(200).json({ message: "User already exists" });
         }
-
-        // Қолданушыны құру
+      
         const userData = {
           _id: id,
           clerkId: id,
@@ -57,7 +62,7 @@ export const clerkWebhooks = async (req, res) => {
           image,
           resume: "",
         };
-
+      
         await User.create(userData);
         console.log("✅ Қолданушы сәтті құрылды:", userData);
         return res.json({});
