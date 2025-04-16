@@ -3,13 +3,14 @@ import User from "../models/User.js";
 
 const requireUser = async (req, res, next) => {
   try {
-    const { userId } = getAuth(req); // Clerk аутентификация
+    const { userId } = getAuth(req); // Clerk user ID
+    console.log("🔐 Clerk userId:", userId);
 
     if (!userId) {
-      return res.status(401).json({ success: false, message: "Токен жарамсыз немесе қолданушы табылмады" });
+      return res.status(401).json({ success: false, message: "Жарамсыз токен немесе жүйеге кірмегенсіз" });
     }
 
-    const user = await User.findById(userId); // user._id == clerkId
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ success: false, message: "Қолданушы табылмады" });
@@ -19,7 +20,7 @@ const requireUser = async (req, res, next) => {
     next();
   } catch (error) {
     console.error("❌ requireUser қатесі:", error.message);
-    return res.status(401).json({ success: false, message: "Қолданушыны тексеру қатесі" });
+    return res.status(401).json({ success: false, message: "Тексеру кезінде қате шықты" });
   }
 };
 
