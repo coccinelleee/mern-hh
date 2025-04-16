@@ -5,8 +5,7 @@ import Job from "../models/Job.js";
 import { v2 } from "cloudinary";
 
 export const getUserData = async (req, res) => {
-  const userId = req.auth.userId;
-
+  const userId = req.userId; // 🔥 Вот так
   console.log("Сұраудағы пайдаланушы идентификаторы:", userId);
 
   try {
@@ -31,7 +30,7 @@ export const getUserData = async (req, res) => {
 
 export const applyForJob = async (req, res) => {
   const { jobId } = req.body;
-  const userId = req.auth.userId;
+  const userId = req.userId;
 
   try {
     const user = await User.findOne({ clerkId: userId });
