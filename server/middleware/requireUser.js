@@ -1,25 +1,27 @@
-import { getAuth } from "@clerk/express";
-import User from "../models/User.js";
+import { clerkClient } from "@clerk/clerk-sdk-node";
 
 const requireUser = async (req, res, next) => {
-  const auth = getAuth(req);
-
-  if (!auth || !auth.userId) {
-    return res.status(401).json({ success: false, message: "Қолданушы жүйеге кірмеген" });
-  }
-
   try {
-    const user = await User.findById(auth.userId);
+    const authHeader = req.headers.authorization;
 
-    if (!user) {
-      return res.status(404).json({ success: false, message: "Қолданушы табылмады" });
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ success: false, message: "Токен жоқ, жүйеге кіріңіз" });
     }
 
+    const token = authHeader.split(" ")[1];
+
+    const session = await clerkClient.sessions.verifySession(token);
+
+    if (!session) {
+      return res.status(401).json({ success: false, message: "Сессия жарамсыз" });
+    }
+
+    const user = await clerkClient.users.getUser(session.userId);
     req.user = user;
     next();
-  } catch (err) {
-    console.error("requireUser error:", err.message);
-    return res.status(500).json({ success: false, message: "Қате орын алды" });
+  } catch (error) {
+    console.error("🔒 Clerk requireUser error:", error.message);
+    return res.status(401).json({ success: false, message: "Қолданушы тексеруі сәтсіз" });
   }
 };
 
