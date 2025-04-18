@@ -11,13 +11,13 @@ export const protectUser = async (req, res, next) => {
     const token = authHeader.split(" ")[1];
 
     const { userId, sessionId } = await verifyToken(token, {
-      secretKey: process.env.CLERK_SECRET_KEY
+      secretKey: process.env.CLERK_SECRET_KEY,
     });
 
     req.user = { id: userId, session: sessionId };
     next();
   } catch (error) {
-    console.log("❌ Clerk token verification failed:", error);
+    console.error("❌ Clerk token verification failed:", error.message);
     return res.status(401).json({ success: false, message: "Unauthorized" });
   }
 };
