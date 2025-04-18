@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { Route, Routes } from "react-router-dom";
+import { SignIn } from '@clerk/clerk-react';
 import Home from "./pages/Home";
 import Applications from "./pages/Applications";
 import ApplyJob from "./pages/ApplyJob";
