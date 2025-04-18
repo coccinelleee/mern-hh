@@ -8,14 +8,10 @@ export const AppContext = createContext();
 export const AppContextProvider = (props) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
   const { getToken } = useAuth();
 
-  const [searchFilter, setSearchFilter] = useState({
-    title: "",
-    location: "",
-  });
-
+  const [searchFilter, setSearchFilter] = useState({ title: "", location: "" });
   const [isSearched, setIsSearched] = useState(false);
   const [jobs, setJobs] = useState([]);
   const [showRecruiterLogin, setShowRecruiterLogin] = useState(false);
@@ -48,24 +44,30 @@ export const AppContextProvider = (props) => {
   const fetchUserData = async () => {
     try {
       const token = await getToken();
+      if (!token) return toast.error("Clerk token missing");
+
       const { data } = await axios.get(`${backendUrl}/api/users/user`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       data.success ? setUserData(data.user) : toast.error(data.message);
     } catch (error) {
-      toast.error(error.message);
+      toast.error("Fetch user failed: " + error.message);
     }
   };
 
   const fetchUserApplications = async () => {
     try {
       const token = await getToken();
+      if (!token) return toast.error("Clerk token missing");
+
       const { data } = await axios.get(`${backendUrl}/api/users/applications`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       data.success ? setUserApplications(data.applications) : toast.error(data.message);
     } catch (error) {
-      toast.error(error.message);
+      toast.error("Fetch applications failed: " + error.message);
     }
   };
 
@@ -82,33 +84,41 @@ export const AppContextProvider = (props) => {
   }, [companyData]);
 
   useEffect(() => {
-    if (user) {
-      fetchUserData();
-      fetchUserApplications();
-    }
+    const fetchData = async () => {
+      const token = await getToken();
+      if (user && token) {
+        await fetchUserData();
+        await fetchUserApplications();
+      }
+    };
+    fetchData();
   }, [user]);
 
-  const value = {
-    searchFilter,
-    setSearchFilter,
-    setIsSearched,
-    isSearched,
-    jobs,
-    setJobs,
-    setShowRecruiterLogin,
-    showRecruiterLogin,
-    companyToken,
-    setCompanyToken,
-    companyData,
-    setCompanyData,
-    backendUrl,
-    userData,
-    setUserData,
-    userApplications,
-    setUserApplications,
-    fetchUserData,
-    fetchUserApplications,
-  };
-
-  return <AppContext.Provider value={value}>{props.children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider
+      value={{
+        searchFilter,
+        setSearchFilter,
+        setIsSearched,
+        isSearched,
+        jobs,
+        setJobs,
+        setShowRecruiterLogin,
+        showRecruiterLogin,
+        companyToken,
+        setCompanyToken,
+        companyData,
+        setCompanyData,
+        backendUrl,
+        userData,
+        setUserData,
+        userApplications,
+        setUserApplications,
+        fetchUserData,
+        fetchUserApplications,
+      }}
+    >
+      {props.children}
+    </AppContext.Provider>
+  );
 };
