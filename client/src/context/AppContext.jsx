@@ -47,7 +47,9 @@ export const AppContextProvider = (props) => {
       if (!token) return toast.error("Clerk token missing");
 
       const { data } = await axios.get(`${backendUrl}/api/users/user`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       data.success ? setUserData(data.user) : toast.error(data.message);
@@ -62,7 +64,9 @@ export const AppContextProvider = (props) => {
       if (!token) return toast.error("Clerk token missing");
 
       const { data } = await axios.get(`${backendUrl}/api/users/applications`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       data.success ? setUserApplications(data.applications) : toast.error(data.message);
@@ -80,19 +84,23 @@ export const AppContextProvider = (props) => {
   }, [companyToken]);
 
   useEffect(() => {
-    if (companyData) localStorage.setItem("companyData", JSON.stringify(companyData));
+    if (companyData) {
+      localStorage.setItem("companyData", JSON.stringify(companyData));
+    }
   }, [companyData]);
 
+  // ✅ Здесь isSignedIn используется вместо user, чтобы токен был доступен точно
   useEffect(() => {
     const fetchData = async () => {
       const token = await getToken();
-      if (user && token) {
+      console.log("🔐 Clerk Token for fetchData:", token);
+      if (isSignedIn && token) {
         await fetchUserData();
         await fetchUserApplications();
       }
     };
     fetchData();
-  }, [user]);
+  }, [isSignedIn]);
 
   return (
     <AppContext.Provider
