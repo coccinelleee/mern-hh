@@ -6,6 +6,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import 'dotenv/config'
+console.log("🛠️ Clerk Secret Key:", process.env.CLERK_SECRET_KEY);
 
 // Дерекқор мен Cloudinary конфигурациясын қосу
 import connectDB from "./config/db.js";

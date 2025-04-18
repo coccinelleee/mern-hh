@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   image: {
     type: String,
     required: true,
-    default: "https://cdn-icons-png.flaticon.com/512/149/149071.png", // Аватар по умолчанию
+    default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
   },
   resume: { type: String },
 });
