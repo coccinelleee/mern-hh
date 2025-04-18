@@ -21,7 +21,9 @@ await connectCloudinary();
 
 app.use(cors({
   origin: ["http://localhost:5173", "https://mern-hh.vercel.app"],
-  credentials: true
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization", "token"],
+  credentials: true,
 }));
 app.use(express.json());
 
