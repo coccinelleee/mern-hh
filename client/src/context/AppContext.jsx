@@ -45,19 +45,17 @@ export const AppContextProvider = (props) => {
     try {
       const token = await getToken({ template: "backend" });
       if (!token) return toast.error("Clerk token missing");
-
-      console.log("🧪 Fetching user with token:", token);
-
+  
       const { data } = await axios.get(`${backendUrl}/api/users/user`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
+  
       if (!data?.user?.email || !data?.user?._id) {
         console.warn("❗ Недостающие поля в ответе пользователя:", data);
       }
-
+  
       data.success ? setUserData(data.user) : toast.error(data.message);
     } catch (error) {
       if (error.response?.status === 401) {

@@ -4,7 +4,6 @@ import User from "../models/User.js";
 // Clerk жүйесінен келетін webhook сұраныстарын өңдеу
 export const clerkWebhooks = async (req, res) => {
   try {
-    // Clerk вебхугының құпия кілтімен тексеру
     const webhook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
     const reqBody = req.body;
 
@@ -14,57 +13,53 @@ export const clerkWebhooks = async (req, res) => {
 
     const { data, type } = reqBody;
     console.log("📦 Webhook оқиғасы:", type);
-
     console.log("📦 RAW DATA:", JSON.stringify(data, null, 2));
 
     if (!data || !type) {
       return res.status(400).json({ error: "Сұраныс дұрыс емес" });
     }
 
-    // Сұранысты тексеру — қолтаңба арқылы
     await webhook.verify(JSON.stringify(reqBody), {
       "svix-id": req.headers["svix-id"],
       "svix-timestamp": req.headers["svix-timestamp"],
       "svix-signature": req.headers["svix-signature"],
     });
 
-    // Webhook оқиғасын өңдеу
     switch (type) {
       case "user.created": {
         const email = data.email_addresses?.[0]?.email_address;
-        const id = data.id;
+        const clerkId = data.id;
         const image =
           data.image_url ||
           data.profile_image_url ||
           data.external_accounts?.[0]?.avatar_url ||
           "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-      
+
         console.log("📧 Email:", email);
-        console.log("🧠 ID:", id);
+        console.log("🧠 Clerk ID:", clerkId);
         console.log("🖼 Image:", image);
-      
-        if (!id || !email || !image) {
-          console.log("❌ Қолданушыны құру үшін деректер жеткіліксіз");
-          return res.status(400).json({ error: "Міндетті деректер жоқ" });
+
+        if (!clerkId || !email) {
+          console.log("❌ Міндетті деректер жоқ");
+          return res.status(400).json({ error: "Clerk ID және Email қажет" });
         }
-      
+
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-          console.log("⚠️ Бұл электрондық поштасы бар пайдаланушы бұрыннан бар");
+          console.log("⚠️ Бұл пайдаланушы бұрыннан бар");
           return res.status(200).json({ message: "User already exists" });
         }
-      
+
         const userData = {
-          _id: id,
           clerkId: id,
           email,
-          name: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
+          name,
           image,
           resume: "",
         };
-      
+        
         await User.create(userData);
-        console.log("✅ Қолданушы сәтті құрылды:", userData);
+        console.log("✅ Қолданушы құрылды:", userData);
         return res.json({});
       }
 

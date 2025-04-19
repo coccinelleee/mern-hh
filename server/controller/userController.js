@@ -94,14 +94,20 @@ export const updateUserResume = async (req, res) => {
     const user = await User.findOne({ clerkId });
     if (!user) return res.json({ success: false, message: "Пайдаланушы табылмады" });
 
-    if (resumeFile) {
-      const resumeUpload = await v2.uploader.upload(resumeFile.path);
+    if (resumeFile?.path) {
+      const resumeUpload = await v2.uploader.upload(resumeFile.path, {
+        folder: "resumes",
+        resource_type: "auto"
+      });
       user.resume = resumeUpload.secure_url;
-    }
+      await user.save();
 
-    await user.save();
-    return res.json({ success: true, message: "Резюме сәтті жаңартылды" });
+      return res.json({ success: true, message: "Резюме сәтті жаңартылды" });
+    } else {
+      return res.status(400).json({ success: false, message: "Файл табылмады" });
+    }
   } catch (error) {
+    console.error("📄 Резюме қатесі:", error.message);
     res.json({ success: false, message: error.message });
   }
 };

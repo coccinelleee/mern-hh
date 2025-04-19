@@ -1,5 +1,4 @@
 import { getAuth } from "@clerk/express";
-
 const requireUser = (req, res, next) => {
   const { userId } = getAuth(req);
   if (!userId) {
@@ -8,5 +7,4 @@ const requireUser = (req, res, next) => {
   req.userId = userId;
   next();
 };
-
 export default requireUser;
