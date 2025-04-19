@@ -7,7 +7,7 @@ import {
 } from "../controller/userController.js";
 import upload from "../config/multer.js";
 import requireUser from "../middleware/requireUser.js";
-import { protectUser } from '../middleware/protectUser.js';
+import { protectUser } from "../middleware/protectUser.js"; // ✅ ES-импорт
 
 const router = express.Router();
 

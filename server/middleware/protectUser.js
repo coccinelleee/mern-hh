@@ -1,4 +1,4 @@
-import { verifyToken } from "@clerk/backend";
+import { verifyToken } from '@clerk/backend';
 
 export const protectUser = async (req, res, next) => {
   try {

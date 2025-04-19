@@ -25,7 +25,7 @@ export const AppContextProvider = (props) => {
       const { data } = await axios.get(`${backendUrl}/api/jobs`);
       data.success ? setJobs(data.jobs) : toast.error(data.message);
     } catch (error) {
-      toast.error(error.message);
+      toast.error("Fetch jobs error: " + error.message);
     }
   };
 
@@ -37,14 +37,16 @@ export const AppContextProvider = (props) => {
       });
       data.success ? setCompanyData(data.company) : toast.error(data.message);
     } catch (error) {
-      toast.error(error.message);
+      toast.error("Fetch company error: " + error.message);
     }
   };
 
   const fetchUserData = async () => {
     try {
-      const token = await getToken();
+      const token = await getToken({ template: "backend" });
       if (!token) return toast.error("Clerk token missing");
+
+      console.log("🧪 Fetching user with token:", token);
 
       const { data } = await axios.get(`${backendUrl}/api/users/user`, {
         headers: {
@@ -52,15 +54,23 @@ export const AppContextProvider = (props) => {
         },
       });
 
+      if (!data?.user?.email || !data?.user?._id) {
+        console.warn("❗ Недостающие поля в ответе пользователя:", data);
+      }
+
       data.success ? setUserData(data.user) : toast.error(data.message);
     } catch (error) {
-      toast.error("Fetch user failed: " + error.message);
+      if (error.response?.status === 401) {
+        toast.error("Session expired. Please log in again.");
+      } else {
+        toast.error("Fetch user error: " + error.message);
+      }
     }
   };
 
   const fetchUserApplications = async () => {
     try {
-      const token = await getToken();
+      const token = await getToken({ template: "backend" });
       if (!token) return toast.error("Clerk token missing");
 
       const { data } = await axios.get(`${backendUrl}/api/users/applications`, {
@@ -71,7 +81,7 @@ export const AppContextProvider = (props) => {
 
       data.success ? setUserApplications(data.applications) : toast.error(data.message);
     } catch (error) {
-      toast.error("Fetch applications failed: " + error.message);
+      toast.error("Fetch applications error: " + error.message);
     }
   };
 
@@ -89,14 +99,17 @@ export const AppContextProvider = (props) => {
     }
   }, [companyData]);
 
-  // ✅ Здесь isSignedIn используется вместо user, чтобы токен был доступен точно
   useEffect(() => {
     const fetchData = async () => {
-      const token = await getToken();
-      console.log("🔐 Clerk Token for fetchData:", token);
-      if (isSignedIn && token) {
-        await fetchUserData();
-        await fetchUserApplications();
+      try {
+        const token = await getToken({ template: "backend" });
+        console.log("🔐 Clerk Token:", token);
+        if (isSignedIn && token) {
+          await fetchUserData();
+          await fetchUserApplications();
+        }
+      } catch (error) {
+        console.error("Token fetch error:", error);
       }
     };
     fetchData();

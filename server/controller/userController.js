@@ -2,31 +2,32 @@ import User from "../models/User.js";
 import JobApplication from "../models/JobApplication.js";
 import Job from "../models/Job.js";
 import { v2 } from "cloudinary";
+import { createClerkClient } from "@clerk/backend";
 
-// 🔹 Получение данных пользователя
+const clerk = createClerkClient({
+  secretKey: process.env.CLERK_SECRET_KEY,
+});
+
 export const getUserData = async (req, res) => {
-  const clerkId = req.userId; // 👈 приходит из requireUser.js
-  console.log("🔍 Clerk ID:", clerkId);
+  const clerkId = req.userId;
+  if (!clerkId) {
+    return res.status(401).json({ success: false, message: "Clerk ID табылмады" });
+  }
 
   try {
-    let user = await User.findOne({ clerkId });
+    const user = await User.findOne({ clerkId });
 
     if (!user) {
-      user = await User.create({
-        clerkId,
-        name: "Жаңа қолданушы",
-        email: "",
-        resume: "",
-      });
-      console.log("✅ Жаңа пайдаланушы құрылды:", user);
+      return res.status(404).json({ success: false, message: "Пайдаланушы табылмады" });
     }
 
-    res.json({ success: true, user });
+    return res.json({ success: true, user });
   } catch (error) {
-    console.error("⛔ Пайдаланушы қатесі:", error.message);
-    res.json({ success: false, message: error.message });
+    console.error("⛔ Clerk ID бойынша қатесі:", error.message);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 // 🔹 Отклик на вакансию
 export const applyForJob = async (req, res) => {
@@ -75,13 +76,6 @@ export const getUserJobApplications = async (req, res) => {
       .populate("companyId", "name email image")
       .populate("jobId", "title description location level salary")
       .exec();
-
-    if (!applications) {
-      return res.json({
-        success: false,
-        message: "Бұл пайдаланушы үшін қолданбалар табылмады",
-      });
-    }
 
     return res.json({ success: true, applications });
   } catch (error) {
