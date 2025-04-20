@@ -46,6 +46,29 @@ app.use(clerkMiddleware());
 await connectDB();
 await connectCloudinary();
 
+app.use((req, res, next) => {
+  const id = (Math.random() * 1_000_000).toString(36);
+  const start = Date.now();
+
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+
+    console.info(
+      `[app#finish]: ${id} ${req.ip} ${res.statusCode} ${req.path} ${duration}ms`
+    );
+  });
+
+  res.on("error", () => {
+    const duration = Date.now() - start;
+
+    console.info(
+      `[app#error]: ${id} ${req.ip} ${res.statusCode} ${req.path} ${error?.message ?? error} ${duration}ms`
+    );
+  });
+
+  next();
+});
+
 app.get("/", (req, res) => res.send("API is working ✅"));
 
 app.use("/api/company", companyRoutes);
