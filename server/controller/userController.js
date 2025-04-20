@@ -10,15 +10,28 @@ const clerk = createClerkClient({
 
 export const getUserData = async (req, res) => {
   const clerkId = req.userId;
+
   if (!clerkId) {
     return res.status(401).json({ success: false, message: "Clerk ID табылмады" });
   }
 
   try {
-    const user = await User.findOne({ clerkId });
+    let user = await User.findOne({ clerkId });
 
     if (!user) {
-      return res.status(404).json({ success: false, message: "Пайдаланушы табылмады" });
+      const clerkUser = await clerk.users.getUser(clerkId);
+
+      user = await User.create({
+        clerkId,
+        email: clerkUser.emailAddresses[0]?.emailAddress,
+        name: [
+          clerkUser.firstName,
+          clerkUser.lastName
+        ]
+          .filter(Boolean)
+          .map(v => v.trim())
+          .join(' '),
+      });
     }
 
     return res.json({ success: true, user });
