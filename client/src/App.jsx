@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Route, Routes } from "react-router-dom";
-import { SignIn } from '@clerk/clerk-react';
+import { SignIn, SignUp } from '@clerk/clerk-react'; // ✅ ВАЖНО
 import Home from "./pages/Home";
 import Applications from "./pages/Applications";
 import ApplyJob from "./pages/ApplyJob";
@@ -11,7 +11,7 @@ import AddJob from "./pages/AddJob";
 import ManageJobs from "./pages/ManageJobs";
 import ViewApplications from "./pages/ViewApplications";
 import "quill/dist/quill.snow.css";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
@@ -25,7 +25,8 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/apply-job/:id" element={<ApplyJob />} />
         <Route path="/recruiter-login" element={<RecruiterLogin />} />
-        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/sign-up" element={<SignUp routing="path" path="/sign-up" />} />
+        <Route path="/sign-in" element={<SignIn routing="path" path="/sign-in" />} />
         <Route path="/applications" element={<Applications />} />
         <Route path="/dashboard" element={<Dashboard />}>
           {companyToken ? (

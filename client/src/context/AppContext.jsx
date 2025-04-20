@@ -44,27 +44,42 @@ export const AppContextProvider = (props) => {
   const fetchUserData = async () => {
     try {
       const token = await getToken({ template: "backend" });
-      if (!token) return toast.error("Clerk token missing");
   
-      const { data } = await axios.get(`${backendUrl}/api/users/user`, {
+      if (!token) {
+        toast.error("Clerk token missing");
+        return;
+      }
+  
+      const response = await axios.get(`${backendUrl}/api/users/user`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
   
-      if (!data?.user?.email || !data?.user?._id) {
-        console.warn("❗ Недостающие поля в ответе пользователя:", data);
+      const data = response.data;
+  
+      if (!data.success || !data.user) {
+        toast.error(data.message || "User fetch failed");
+        return;
       }
   
-      data.success ? setUserData(data.user) : toast.error(data.message);
+      if (!data.user.email || !data.user._id) {
+        console.warn("❗ Missing user fields:", data.user);
+      }
+  
+      setUserData(data.user);
     } catch (error) {
+      console.error("🔴 fetchUserData error:", error);
       if (error.response?.status === 401) {
-        toast.error("Session expired. Please log in again.");
+        toast.error("⛔ Session expired. Please log in again.");
+      } else if (error.response?.status === 404) {
+        toast.error("❌ User not found.");
       } else {
         toast.error("Fetch user error: " + error.message);
       }
     }
   };
+  
 
   const fetchUserApplications = async () => {
     try {

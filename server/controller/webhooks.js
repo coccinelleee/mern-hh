@@ -29,39 +29,34 @@ export const clerkWebhooks = async (req, res) => {
       case "user.created": {
         const email = data.email_addresses?.[0]?.email_address;
         const clerkId = data.id;
-        const image =
-          data.image_url ||
-          data.profile_image_url ||
-          data.external_accounts?.[0]?.avatar_url ||
-          "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-
+        const name = `${data.first_name || ""} ${data.last_name || ""}`.trim();
+        const image = data.image_url || data.profile_image_url || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      
         console.log("📧 Email:", email);
         console.log("🧠 Clerk ID:", clerkId);
         console.log("🖼 Image:", image);
-
+      
         if (!clerkId || !email) {
-          console.log("❌ Міндетті деректер жоқ");
           return res.status(400).json({ error: "Clerk ID және Email қажет" });
         }
-
+      
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-          console.log("⚠️ Бұл пайдаланушы бұрыннан бар");
           return res.status(200).json({ message: "User already exists" });
         }
-
+      
         const userData = {
-          clerkId: id,
+          clerkId: data.id,
           email,
-          name,
+          name: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
           image,
           resume: "",
         };
-        
+      
         await User.create(userData);
         console.log("✅ Қолданушы құрылды:", userData);
         return res.json({});
-      }
+      }      
 
       case "user.updated": {
         const updateData = {

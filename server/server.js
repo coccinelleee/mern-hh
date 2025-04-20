@@ -10,12 +10,15 @@ import { clerkWebhooks } from "./controller/clerkWebhooks.js";
 import bodyParser from "body-parser";
 import { clerkMiddleware } from "@clerk/express";
 
+
 dotenv.config();
 const app = express();
 
-const allowedOrigins = ["http://localhost:5173", "https://mern-hh.vercel.app"];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://mern-hh.vercel.app"
+];
 
-// ✅ CORS
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
@@ -25,24 +28,26 @@ app.use(cors({
     return callback(null, true);
   },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "token"],
 }));
 app.options("*", cors());
 
-// ✅ Webhook route ДО JSON и Clerk
-app.post("/api/users/webhooks/clerk", bodyParser.json({ type: "*/*" }), clerkWebhooks);
+// Webhook — ДО JSON/Clerk
+app.post(
+  "/api/users/webhooks/clerk",
+  bodyParser.raw({ type: "*/*" }),
+  clerkWebhooks
+);
 
-// ✅ JSON и Clerk Middleware
+// JSON/Clerk
 app.use(express.json());
 app.use(clerkMiddleware());
 
+// БД
 await connectDB();
 await connectCloudinary();
 
 app.get("/", (req, res) => res.send("API is working ✅"));
 
-// ✅ Обычные маршруты
 app.use("/api/company", companyRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/users", userRoutes);

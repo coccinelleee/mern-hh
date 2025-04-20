@@ -1,50 +1,61 @@
+// controller/clerkWebhooks.js
 import { Webhook } from "svix";
 import User from "../models/User.js";
 
 export const clerkWebhooks = async (req, res) => {
-  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
-  if (!WEBHOOK_SECRET) return res.status(400).json({ message: "Webhook secret missing" });
+  const payload = req.body;
+  const headers = {
+    "svix-id": req.headers["svix-id"],
+    "svix-timestamp": req.headers["svix-timestamp"],
+    "svix-signature": req.headers["svix-signature"],
+  };
 
-  const payload = JSON.stringify(req.body);
-  const headers = req.headers;
-
-  const wh = new Webhook(WEBHOOK_SECRET);
-
-  let evt;
-  try {
-    evt = wh.verify(payload, headers);
-  } catch (err) {
-    console.error("❌ Webhook signature verification failed:", err.message);
-    return res.status(400).json({ success: false, message: "Invalid signature" });
-  }
-
-  const event = evt;
+  const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
+  const wh = new Webhook(webhookSecret);
 
   try {
-    if (event.type === "user.created") {
-      const clerkUser = event.data;
+    const evt = wh.verify(payload, headers); // 👈 raw body!
+    const { data, type } = evt;
 
-      const existingUser = await User.findOne({ clerkId: clerkUser.id });
-      if (existingUser) {
-        return res.status(200).json({ success: true, message: "User already exists" });
-      }
+    console.log("📦 Webhook Event:", type);
 
-      const newUser = new User({
-        clerkId: clerkUser.id,
-        email: clerkUser.email_addresses[0]?.email_address || "",
-        name: `${clerkUser.first_name || ""} ${clerkUser.last_name || ""}`.trim(),
-        image: clerkUser.image_url || "",
-        resume: "",
-      });
+    if (type === "user.created") {
+      const clerkId = data.id;
+      const email = data.email_addresses?.[0]?.email_address;
+      const name = `${data.first_name || ""} ${data.last_name || ""}`.trim();
+      const image = data.image_url || data.profile_image_url || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
-      await newUser.save();
+      if (!clerkId || !email) return res.status(400).json({ message: "Missing required fields" });
 
-      return res.status(201).json({ success: true, message: "User created" });
+      const exists = await User.findOne({ clerkId });
+      if (exists) return res.status(200).json({ message: "User already exists" });
+
+      await User.create({ clerkId, email, name, image, resume: "" });
+
+      console.log("✅ User created");
+      return res.status(200).json({ message: "User created" });
     }
 
-    return res.status(200).json({ success: true, message: "Unhandled event" });
-  } catch (error) {
-    console.error("Webhook error:", error.message);
-    return res.status(500).json({ success: false, message: error.message });
+    if (type === "user.updated") {
+      const updateData = {
+        email: data.email_addresses?.[0]?.email_address,
+        name: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
+        image: data.image_url || data.profile_image_url,
+      };
+      await User.findOneAndUpdate({ clerkId: data.id }, updateData);
+      console.log("🔄 User updated");
+      return res.status(200).json({ message: "User updated" });
+    }
+
+    if (type === "user.deleted") {
+      await User.findOneAndDelete({ clerkId: data.id });
+      console.log("🗑️ User deleted");
+      return res.status(200).json({ message: "User deleted" });
+    }
+
+    return res.status(200).json({ message: "Event type not handled" });
+  } catch (err) {
+    console.error("❌ Webhook verification failed:", err.message);
+    return res.status(400).json({ success: false, message: "Invalid signature" });
   }
 };
