@@ -14,7 +14,7 @@ export const clerkWebhooks = async (req, res) => {
   const wh = new Webhook(webhookSecret);
 
   try {
-    const evt = wh.verify(payload, headers); // 👈 raw body!
+    const evt = wh.verify(payload, headers); 
     const { data, type } = evt;
 
     console.log("📦 Webhook Event:", type);

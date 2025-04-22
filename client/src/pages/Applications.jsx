@@ -23,7 +23,7 @@ const Applications = () => {
   const updateResume = async () => {
     try {
       if (!resume) {
-        toast.error("Please select a resume file.");
+        toast.error("Түйіндеме файлын таңдаңыз.");
         return;
       }
 
@@ -149,7 +149,7 @@ const Applications = () => {
                           : "bg-[#007bff31] text-[#007AFF]"
                       } px-4 py-1.5 rounded-lg`}
                     >
-                      {job.status || "Pending"}
+                      {job.status || "pending"}
                     </span>
                   </td>
                 </tr>

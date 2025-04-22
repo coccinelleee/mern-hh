@@ -5,9 +5,10 @@ import bgimage from "../assets/bg-image-main.jpg";
 import companyLogo from "../assets/facebook-1-logo-svgrepo-com.svg";
 import companyLogo1 from "../assets/linkedin-logo-svgrepo-com.svg";
 import companyLogo2 from "../assets/slack-logo-svgrepo-com.svg";
+import companyLogo6 from "../assets/microsoft_logo.svg";
 import companyLogo3 from "../assets/instagram-logo-svgrepo-com.svg";
-import companyLogo4 from "../assets/netflix-2-logo-svgrepo-com.svg";
-import companyLogo5 from "../assets/google-1-1-logo-svgrepo-com.svg";
+import companyLogo7 from "../assets/twitter_icon.svg";
+import companyLogo8 from "../assets/google-1-1-logo-svgrepo-com.svg";
 import { motion } from "framer-motion";
 
 const Hero = () => {
@@ -101,11 +102,11 @@ const Hero = () => {
           </div>
 
           <div className="flex flex-wrap justify-center gap-4 lg:gap-20 flex-grow">
-            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo} alt="Logo 1" />
-            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo1} alt="Logo 2" />
-            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo3} alt="Logo 4" />
-            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo4} alt="Logo 5" />
-            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo5} alt="Logo 6" />
+            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo} alt="Logo 8" />
+            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo1} alt="Logo 8" />
+            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo8} alt="Logo 4" />
+            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo6} alt="Logo 6" />
+            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo7} alt="Logo 7" />
           </div>
         </div>
       </div>
