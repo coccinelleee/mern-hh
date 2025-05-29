@@ -5,6 +5,8 @@ import { useUser } from '@clerk/clerk-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Reviews() {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const [reviews, setReviews] = useState([]);
   const [form, setForm] = useState({ message: '', rating: 5 });
   const [hover, setHover] = useState(null);
@@ -13,7 +15,7 @@ export default function Reviews() {
   const { user, isSignedIn } = useUser();
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/reviews')
+    axios.get(`${backendUrl}/api/reviews`)
       .then(res => {
         setReviews(res.data);
         if (user) {
@@ -43,10 +45,10 @@ export default function Reviews() {
     try {
       let res;
       if (editingReview) {
-        res = await axios.put(`http://localhost:5000/api/reviews/${editingReview._id}`, payload);
+        res = await axios.put(`${backendUrl}/api/reviews/${editingReview._id}`, payload);
         setReviews(prev => prev.map(r => r._id === res.data._id ? res.data : r));
       } else {
-        res = await axios.post('http://localhost:5000/api/reviews', payload);
+        res = await axios.post(`${backendUrl}/api/reviews`, payload);
         setReviews(prev => [res.data, ...prev]);
         setHasReviewed(true);
       }
