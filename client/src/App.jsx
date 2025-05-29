@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Route, Routes } from "react-router-dom";
-import { SignIn, SignUp } from '@clerk/clerk-react'; // ✅ ВАЖНО
+import { SignIn, SignUp } from '@clerk/clerk-react';
 import Home from "./pages/Home";
 import Applications from "./pages/Applications";
 import ApplyJob from "./pages/ApplyJob";
@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import AddJob from "./pages/AddJob";
 import ManageJobs from "./pages/ManageJobs";
 import ViewApplications from "./pages/ViewApplications";
+import Features from "./pages/Features"; // ✅ не забудь импортировать
 import "quill/dist/quill.snow.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -28,15 +29,15 @@ const App = () => {
         <Route path="/sign-up" element={<SignUp routing="path" path="/sign-up" />} />
         <Route path="/sign-in" element={<SignIn routing="path" path="/sign-in" />} />
         <Route path="/applications" element={<Applications />} />
-        <Route path="/dashboard" element={<Dashboard />}>
-          {companyToken ? (
-            <>
-              <Route path="add-job" element={<AddJob />} />
-              <Route path="manage-job" element={<ManageJobs />} />
-              <Route path="view-applications" element={<ViewApplications />} />
-            </>
-          ) : null}
-        </Route>
+        <Route path="/features" element={<Features />} /> {/* ✅ перемещён сюда */}
+
+        {companyToken && (
+          <Route path="/dashboard" element={<Dashboard />}>
+            <Route path="add-job" element={<AddJob />} />
+            <Route path="manage-job" element={<ManageJobs />} />
+            <Route path="view-applications" element={<ViewApplications />} />
+          </Route>
+        )}
       </Routes>
     </div>
   );

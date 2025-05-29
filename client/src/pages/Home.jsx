@@ -5,9 +5,9 @@ import JobListing from '../components/JobListing'
 import AppDownload from '../components/AppDownload'
 import Footer from '../components/Footer'
 import Calltoaction from '../components/Calltoaction'
+import Reviews from '../components/Reviews';
 
 const Home = () => {
-  
   return (
     <div>
       <Navbar />
@@ -15,6 +15,7 @@ const Home = () => {
       <JobListing /> 
       <AppDownload />
       <Calltoaction />
+      <Reviews />
       <Footer />
     </div>
   )

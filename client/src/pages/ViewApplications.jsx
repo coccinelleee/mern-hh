@@ -160,7 +160,7 @@ const ViewApplications = () => {
                                 }}
                                 className="w-full px-4 py-3 text-left text-base text-green-600 hover:bg-gray-100 border-b"
                               >
-                                Accept
+                                Қабылдау
                               </button>
                               <button
                                 onClick={(e) => {

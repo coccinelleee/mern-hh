@@ -76,7 +76,7 @@ const Footer = () => {
                 <li><a href="/" className="text-lg font-normal text-gray-400 hover:text-violet-400">Басты бет</a></li>
                 <li><a href="/dashboard" className="text-lg font-normal text-gray-400 hover:text-violet-400">Бақылау тақтасы</a></li>
                 <li><a href="/" className="text-lg font-normal text-gray-400 hover:text-violet-400">Жұмыс орындары</a></li>
-                <li><a href="/" className="text-lg font-normal text-gray-400 hover:text-violet-400">Ерекшеліктер</a></li>
+                <li><a href="/features" className="text-lg font-normal text-gray-400 hover:text-violet-400">Ерекшеліктер</a></li>
               </ul>
             </div>
             <div>

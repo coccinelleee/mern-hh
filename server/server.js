@@ -7,74 +7,74 @@ import companyRoutes from "./routes/companyRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import { clerkWebhooks } from "./controller/clerkWebhooks.js";
+import reviewRoutes from './routes/reviewRoutes.js';
 import bodyParser from "body-parser";
 import { clerkMiddleware } from "@clerk/express";
-
 
 dotenv.config();
 const app = express();
 
+// ✅ Разрешённые фронтенды
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://mern-hh.vercel.app"
+  "https://mern-hh.vercel.app",
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (!allowedOrigins.includes(origin)) {
-      return callback(new Error("CORS policy does not allow this origin"), false);
-    }
-    return callback(null, true);
-  },
-  credentials: true,
-}));
-app.options("*", cors());
+// ✅ Настройка CORS
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
-// Webhook — ДО JSON/Clerk
+// ✅ Webhook до JSON-парсера
 app.post(
   "/api/users/webhooks/clerk",
   bodyParser.raw({ type: "*/*" }),
   clerkWebhooks
 );
 
-// JSON/Clerk
+// ✅ JSON и Clerk middleware
 app.use(express.json());
 app.use(clerkMiddleware());
 
-// БД
-await connectDB();
-await connectCloudinary();
-
+// ✅ Логгирование запросов
 app.use((req, res, next) => {
   const id = (Math.random() * 1_000_000).toString(36);
   const start = Date.now();
 
   res.on("finish", () => {
     const duration = Date.now() - start;
-
     console.info(
-      `[app#finish]: ${id} ${req.ip} ${res.statusCode} ${req.path} ${duration}ms`
-    );
-  });
-
-  res.on("error", () => {
-    const duration = Date.now() - start;
-
-    console.info(
-      `[app#error]: ${id} ${req.ip} ${res.statusCode} ${req.path} ${error?.message ?? error} ${duration}ms`
+      `[app#finish]: ${id} ${req.method} ${req.path} → ${res.statusCode} (${duration}ms)`
     );
   });
 
   next();
 });
 
+// ✅ Проверка доступности
 app.get("/", (req, res) => res.send("API is working ✅"));
 
+// ✅ Подключение роутов
 app.use("/api/company", companyRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/users", userRoutes);
+app.use('/api/reviews', reviewRoutes);
 
+
+// ✅ Подключение баз
+await connectDB();
+await connectCloudinary();
+
+// ✅ Запуск сервера
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
