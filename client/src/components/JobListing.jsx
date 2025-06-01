@@ -157,7 +157,7 @@ const ting = () => {
         <div className={showFilter ? "" : "hidden lg:block"}>
           <h4 className="font-bold text-larger py-4 pt-14 font-primary">Орналасқан жері бойынша іздеу</h4>
           <ul className="space-y-4 text-gray-600">
-            {JobLocations.slice(0, showAllLocations ? JobLocations.length : 5).map((location, index) => (
+            {JobLocations.slice(0, showAllLocations ? JobLocations.length : 15).map((location, index) => (
               <li key={index} className="flex gap-3 items-center">
                 <input
                   className="scale-125 text-primary rounded-lg"

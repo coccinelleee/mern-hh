@@ -84,8 +84,8 @@ const Footer = () => {
               <ul className="flex flex-col gap-6">
                 <li><a href="/applications" className="text-lg font-normal text-gray-400 hover:text-violet-400">Түйіндеме құрастырушысы</a></li>
                 <li><a href="/" className="text-lg font-normal text-gray-400 hover:text-violet-400">Жұмыс тізімдері</a></li>
-                <li><a href="/" className="text-lg font-normal text-gray-400 hover:text-violet-400">Кәсіптік бағдар беру</a></li>
-                <li><a href="/" className="text-lg font-normal text-gray-400 hover:text-violet-400">Біліктілікті дамыту</a></li>
+                <li><a href="/career-guidance" className="text-lg font-normal text-gray-400 hover:text-violet-400">Кәсіптік бағдар беру</a></li>
+                <li><a href="/skills" className="text-lg font-normal text-gray-400 hover:text-violet-400">Біліктілікті дамыту</a></li>
               </ul>
             </div>
             <div>
