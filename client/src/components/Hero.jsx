@@ -16,6 +16,7 @@ const Hero = () => {
   const [titleInput, setTitleInput] = useState("");
   const [locationInput, setLocationInput] = useState("");
 
+  // Поиск отключен: onSearch не вызывается
   const onSearch = () => {
     setSearchFilter({
       title: titleInput,
@@ -46,13 +47,13 @@ const Hero = () => {
                 армандағы жұмысыңызды
               </span>
               <br />
-              таңдаңыз<br />
+              таңдаңыз
             </h2>
           </div>
 
           <p className="mb-8 max-w-xl mx-auto text-sm lg:text-[12px] font-light px-5 leading-tight p-2">
-            Сіздің келесі үлкен мансаптық қадамыңыз дәл осы жерден басталады - ең жақсы жұмысты зерттеңіз
-            Мүмкіндіктер және болашағыңызға алғашқы қадам жасаңыз
+            Сіздің келесі үлкен мансаптық қадамыңыз дәл осы жерден басталады -
+            ең жақсы жұмысты зерттеңіз. Мүмкіндіктер және болашағыңызға алғашқы қадам жасаңыз.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-between bg-white rounded-lg text-gray-600 py-[15px] px-[12px] pl-4 lg:pl-5 max-w-5xl mx-5 sm:mx-auto sm:p-3 sm:m-2 gap-4 sm:gap-0">
@@ -78,13 +79,17 @@ const Hero = () => {
                 onKeyDown={(e) => e.key === "Enter" && onSearch()}
               />
             </div>
+
+            {/* 🔒 Зафиксированная кнопка */}
             <div className="relative group">
               <button
-                onClick={onSearch}
-                className="relative inline-block p-px font-semibold leading-6 shadow-2xl rounded-xl shadow-zinc-500 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95"
+                className="relative inline-block p-px font-semibold leading-6 shadow-2xl rounded-xl shadow-zinc-500 
+                           transition-transform duration-300 ease-in-out 
+                           hover:scale-100 active:scale-100 
+                           cursor-default pointer-events-none"
               >
-                <span className="absolute inset-0 rounded-xl bg-gradient-to-r opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
-                <span className="relative z-5 block px-6 py-3 sm:px-12 sm:py-4 rounded-xl bg-primary hover:bg-slate-600 duration-500">
+                <span className="absolute inset-0 rounded-xl bg-gradient-to-r opacity-0"></span>
+                <span className="relative z-5 block px-6 py-3 sm:px-12 sm:py-4 rounded-xl bg-primary">
                   <div className="relative z-5 flex items-center space-x-2">
                     <span className="text-white transition-all duration-500 ease-in-out font-primary">
                       Іздеу
@@ -98,15 +103,15 @@ const Hero = () => {
 
         <div className="border border-[#CFCFCF] shadow-md mx-2 mt-5 p-6 rounded-md flex flex-col sm:flex-row sm:items-center">
           <div className="w-full sm:w-auto sm:mr-4 flex justify-center sm:justify-start">
-            <p className="font-medium text-center sm:text-left sm:p-4">Сенім білдірген </p>
+            <p className="font-medium text-center sm:text-left sm:p-4">Сенім білдірген</p>
           </div>
 
           <div className="flex flex-wrap justify-center gap-4 lg:gap-20 flex-grow">
-            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo} alt="Logo 8" />
-            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo1} alt="Logo 8" />
-            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo8} alt="Logo 4" />
-            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo6} alt="Logo 6" />
-            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo7} alt="Logo 7" />
+            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo} alt="Logo" />
+            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo1} alt="Logo" />
+            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo8} alt="Logo" />
+            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo6} alt="Logo" />
+            <img className="h-[70px] w-[70px] grayscale hover:grayscale-0 transition-all duration-300" src={companyLogo7} alt="Logo" />
           </div>
         </div>
       </div>

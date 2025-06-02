@@ -41,7 +41,7 @@ const ViewApplications = () => {
 
       if (data.success) {
         fetchCompanyJobApplications();
-        toast.success(`Application ${status.toLowerCase()} successfully`);
+        toast.success(`Өтініш "${status === "Accepted" ? "қабылданды" : "қабылданбады"}"`);
       } else {
         toast.error(data.message);
       }
@@ -181,7 +181,7 @@ const ViewApplications = () => {
                             ? "bg-green-100 text-green-700" 
                             : "bg-red-100 text-red-700"
                         }`}>
-                          {applicant.status}
+                          {applicant.status === "Accepted" ? "Қабылданды" : "Қабылданбады"}
                         </div>
                       )}
                     </td>

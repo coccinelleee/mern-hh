@@ -16,6 +16,13 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CareerGuidance from './pages/CareerGuidance';
 import BiliktiliktiDamytyPage from './pages/BiliktiliktiDamytyPage';
+import FAQ from "./pages/FAQ"; 
+import QuickStart from "./pages/QuickStart";
+import Documentation from "./pages/Documentation";
+import Support from "./pages/Support";
+import Cookies from "./pages/Cookies";
+import License from "./pages/License";
+
 
 const App = () => {
   const { showRecruiterLogin, companyToken } = useContext(AppContext);
@@ -34,6 +41,12 @@ const App = () => {
         <Route path="/features" element={<Features />} /> 
         <Route path="/career-guidance" element={<CareerGuidance />} />
         <Route path="/skills" element={<BiliktiliktiDamytyPage />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/quick-start" element={<QuickStart />} />
+        <Route path="/documentation" element={<Documentation />} />
+        <Route path="/support" element={<Support />} />
+        <Route path="/cookies" element={<Cookies />} />
+        <Route path="/license" element={<License />} />
 
         {companyToken && (
           <Route path="/dashboard" element={<Dashboard />}>

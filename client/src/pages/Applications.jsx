@@ -9,11 +9,24 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 
+// Казахша ай аттары
+const kkMonths = [
+  "қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым",
+  "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан"
+];
+
+// Форматталған қазақша дата
+const formatKazakhDate = (date) => {
+  const d = moment(date);
+  const day = d.date();
+  const month = kkMonths[d.month()];
+  const year = d.year();
+  return `${day} ${month} ${year} ж.`;
+};
 
 const Applications = () => {
   const { user } = useUser();
   const { getToken } = useAuth();
-
   const [isEdit, setIsEdit] = useState(false);
   const [resume, setResume] = useState(null);
 
@@ -29,7 +42,6 @@ const Applications = () => {
 
       const formData = new FormData();
       formData.append("resume", resume);
-
       const token = await getToken();
 
       const { data } = await axios.post(
@@ -45,7 +57,7 @@ const Applications = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error("Түйіндемені жаңарту мүмкін болмады. Қайталап көріңіз.");
+      toast.error("Түйіндемені жаңарту мүмкін болмады.");
     }
 
     setIsEdit(false);
@@ -54,15 +66,15 @@ const Applications = () => {
 
   return (
     <motion.div
-          whileInView={{ opacity: 1, scale: 1 }}
-          initial={{ opacity: 0, scale: 0.5 }}
-          transition={{
-            duration: 0.8,
-            delay: 0.3,
-            ease: [0, 0.71, 0.2, 1.01],
-          }}
-          viewport={{ once: true }} 
-        >
+      whileInView={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0, scale: 0.5 }}
+      transition={{
+        duration: 0.8,
+        delay: 0.3,
+        ease: [0, 0.71, 0.2, 1.01],
+      }}
+      viewport={{ once: true }}
+    >
       <Navbar />
       <div className="container px-4 min-h-[65vh] 2xl:px-20 mx-auto my-10">
         <h2 className="text-xl font-semibold">Сіздің түйіндемеңіз</h2>
@@ -80,7 +92,7 @@ const Applications = () => {
                   accept="application/pdf"
                   onChange={(e) => setResume(e.target.files[0])}
                 />
-                <img src={assets.profile_upload_icon}  alt="Upload Icon" />
+                <img src={assets.profile_upload_icon} alt="Upload Icon" />
               </label>
               <button
                 onClick={updateResume}
@@ -91,7 +103,7 @@ const Applications = () => {
             </>
           ) : (
             <div className="flex gap-2">
-              <a 
+              <a
                 className="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg"
                 href={userData?.resume || "#"}
                 target="_blank"
@@ -109,10 +121,13 @@ const Applications = () => {
           )}
         </div>
 
-        <h2 className="text-2xl font-semibold mb-4 font-primary mt-4">Қолданылған жұмыс орындары</h2>
+        <h2 className="text-2xl font-semibold mb-4 font-primary mt-4">
+          Қолданылған жұмыс орындары
+        </h2>
+
         <table className="min-w-full bg-white border rounded-lg">
           <thead>
-            <tr className='text-primary text-semibold text-xl'>
+            <tr className="text-primary text-semibold text-xl">
               <th className="py-4 px-4 border-b text-left">Компания</th>
               <th className="py-4 px-4 border-b text-left">Қызмет атауы</th>
               <th className="py-4 px-4 border-b text-left max-sm:hidden">Орналасқан жері</th>
@@ -128,16 +143,18 @@ const Applications = () => {
                     <img
                       className="w-8 h-8 rounded mr-2"
                       src={job.companyId?.image || assets.default_company_icon}
-                      alt={`${job.companyId?.name || "Company"} Logo`}
+                      alt={job.companyId?.name || "Company"}
                     />
-                    {job.companyId?.name || "Unknown Company"}
+                    {job.companyId?.name || "Белгісіз компания"}
                   </td>
-                  <td className="py-7 px-5 border-b">{job.jobId?.title || "N/A"}</td>
+                  <td className="py-7 px-5 border-b">
+                    {job.jobId?.title || "Анықталмаған"}
+                  </td>
                   <td className="py-7 px-5 border-b max-sm:hidden">
                     {job.jobId?.location || "N/A"}
                   </td>
                   <td className="py-7 px-5 border-b max-sm:hidden">
-                    {moment(job.date).format("ll")}
+                    {formatKazakhDate(job.date)}
                   </td>
                   <td className="py-7 px-5 border-b">
                     <span
@@ -149,7 +166,11 @@ const Applications = () => {
                           : "bg-[#007bff31] text-[#007AFF]"
                       } px-4 py-1.5 rounded-lg`}
                     >
-                      {job.status || "pending"}
+                      {job.status === "Accepted"
+                        ? "Қабылданды"
+                        : job.status === "Rejected"
+                        ? "Қабылданбады"
+                        : "Қарастырылуда"}
                     </span>
                   </td>
                 </tr>

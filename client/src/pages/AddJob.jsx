@@ -133,7 +133,8 @@ const AddJob = () => {
               Жұмыс деңгейі
             </label>
             <select
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary  outline-none  transition duration-300 ease-in-out"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary outline-none transition duration-300 ease-in-out"
+              value={level} // 🟢 добавлено!
               onChange={(e) => setLevel(e.target.value)}
             >
               <option value="Beginner level">Бастауыш деңгейі</option>

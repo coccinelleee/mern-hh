@@ -91,19 +91,17 @@ const Footer = () => {
             <div>
               <h6 className="text-xl font-bold text-white mb-7 font-primary">Ресурстар</h6>
               <ul className="flex flex-col gap-6">
-                <li><a href="/" className="text-lg font-normal text-gray-400 hover:text-violet-400">Жиі қойылатын сұрақтар</a></li>
-                <li><a href="/" className="text-lg font-normal text-gray-400 hover:text-violet-400">Жылдам іске қосу</a></li>
-                <li><a href="/" className="text-lg font-normal text-gray-400 hover:text-violet-400">Құжаттама</a></li>
-                <li><a href="/" className="text-lg font-normal text-gray-400 hover:text-violet-400">Пайдаланушы нұсқаулығы</a></li>
+                <li><a href="/faq" className="text-lg font-normal text-gray-400 hover:text-violet-400">Жиі қойылатын сұрақтар</a></li>
+                <li><a href="/quick-start" className="text-lg font-normal text-gray-400 hover:text-violet-400">Жылдам іске қосу</a></li>
+                <li><a href="/documentation" className="text-lg font-normal text-gray-400 hover:text-violet-400">Құжаттама</a></li>
               </ul>
             </div>
             <div>
               <h6 className="text-xl font-bold text-white mb-7 font-primary">Қолдау</h6>
               <ul className="flex flex-col gap-6">
-                <li><a href="/" className="text-lg font-normal text-gray-400 hover:text-violet-400">Тұтынушыларды қолдау</a></li>
-                <li><a href="/" className="text-lg font-normal text-gray-400 hover:text-violet-400">Cookie файлдары</a></li>
-                <li><a href="/" className="text-lg font-normal text-gray-400 hover:text-violet-400">Лицензия</a></li>
-                <li><a href="/" className="text-lg font-normal text-gray-400 hover:text-violet-400">Шарттар мен талаптар</a></li>
+                <li><a href="/support" className="text-lg font-normal text-gray-400 hover:text-violet-400">Тұтынушыларды қолдау</a></li>
+                <li><a href="/cookies" className="text-lg font-normal text-gray-400 hover:text-violet-400">Cookie файлдары</a></li>
+                <li><a href="/license" className="text-lg font-normal text-gray-400 hover:text-violet-400">Лицензия</a></li>
               </ul>
             </div>
           </div>
